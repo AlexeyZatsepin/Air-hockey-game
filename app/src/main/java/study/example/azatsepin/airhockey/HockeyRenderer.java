@@ -11,6 +11,7 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import study.example.azatsepin.airhockey.utils.LoggerConfig;
+import study.example.azatsepin.airhockey.utils.MatrixHelper;
 import study.example.azatsepin.airhockey.utils.ResourceReader;
 import study.example.azatsepin.airhockey.utils.ShaderHelper;
 
@@ -18,7 +19,6 @@ import static android.opengl.GLES10.glDrawArrays;
 import static android.opengl.GLES20.GL_COLOR_BUFFER_BIT;
 import static android.opengl.GLES20.GL_POINTS;
 import static android.opengl.GLES20.GL_FLOAT;
-import static android.opengl.GLES20.GL_TRIANGLES;
 import static android.opengl.GLES20.GL_TRIANGLE_FAN;
 import static android.opengl.GLES20.GL_LINES;
 import static android.opengl.GLES20.glClear;
@@ -31,7 +31,11 @@ import static android.opengl.GLES20.glUniformMatrix4fv;
 import static android.opengl.GLES20.glUseProgram;
 import static android.opengl.GLES20.glVertexAttribPointer;
 import static android.opengl.GLES20.glViewport;
+import static android.opengl.Matrix.multiplyMM;
 import static android.opengl.Matrix.orthoM;
+import static android.opengl.Matrix.rotateM;
+import static android.opengl.Matrix.setIdentityM;
+import static android.opengl.Matrix.translateM;
 
 
 public class HockeyRenderer implements GLSurfaceView.Renderer {
@@ -66,7 +70,10 @@ public class HockeyRenderer implements GLSurfaceView.Renderer {
     private static final String U_MATRIX = "u_Matrix";
     private final float[] projectionMatrix = new float[16];
     private int uMatrixLocation;
-
+    /**
+     * moves detection
+     */
+    private final float[] modelMatrix = new float[16];
 
 
     public HockeyRenderer(Context context) {
@@ -126,14 +133,14 @@ public class HockeyRenderer implements GLSurfaceView.Renderer {
     @Override
     public void onSurfaceChanged(GL10 gl10, int width, int height) {
         glViewport(0, 0, width, height);
-        final float aspectRatio = width > height ?
-                (float) width / (float) height :
-                (float) height / (float) width;
-        if (width > height) {// Landscape
-            orthoM(projectionMatrix, 0, -aspectRatio, aspectRatio, -1f, 1f, -1f, 1f);
-        } else {// Portrait or square
-            orthoM(projectionMatrix, 0, -1f, 1f, -aspectRatio, aspectRatio, -1f, 1f);
-        }
+
+        MatrixHelper.perspectiveM(projectionMatrix, 45, (float) width/(float) height, 1f, 10f);
+        setIdentityM(modelMatrix, 0);
+        translateM(modelMatrix, 0, 0f, 0f, -2f);
+        rotateM(modelMatrix, 0, -60f, 1f, 0f, 0f);
+        final float[] temp = new float[16];
+        multiplyMM(temp, 0, projectionMatrix, 0, modelMatrix, 0);
+        System.arraycopy(temp, 0, projectionMatrix, 0, temp.length);
     }
 
     @Override

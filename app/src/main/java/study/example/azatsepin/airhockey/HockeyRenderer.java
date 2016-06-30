@@ -35,7 +35,7 @@ import static android.opengl.Matrix.orthoM;
 
 
 public class HockeyRenderer implements GLSurfaceView.Renderer {
-    private static final int POSITION_COMPONENT_COUNT = 2;
+    private static final int POSITION_COMPONENT_COUNT = 4;
     private static final int BYTES_PER_FLOAT = 4;
     private final Context context;
     private int program; //wtf program is int???
@@ -68,23 +68,24 @@ public class HockeyRenderer implements GLSurfaceView.Renderer {
     private int uMatrixLocation;
 
 
+
     public HockeyRenderer(Context context) {
         this.context = context;
         float[] verticles = { // in the dalvik heap
-                // Order of coordinates: X, Y, R, G, B
+                // Order of coordinates: X, Y, Z, W, R, G, B
 // Triangle Fan
-                0f, 0f, 1f, 1f, 1f,
-                -0.5f, -0.8f, 0.7f, 0.7f, 0.7f,
-                0.5f, -0.8f, 0.7f, 0.7f, 0.7f,
-                0.5f, 0.8f, 0.7f, 0.7f, 0.7f,
-                -0.5f, 0.8f, 0.7f, 0.7f, 0.7f,
-                -0.5f, -0.8f, 0.7f, 0.7f, 0.7f,
+                0f, 0f, 0f, 1.5f, 1f, 1f, 1f,
+                -0.5f, -0.8f, 0f, 1f, 0.7f, 0.7f, 0.7f,
+                0.5f, -0.8f, 0f, 1f, 0.7f, 0.7f, 0.7f,
+                0.5f, 0.8f, 0f, 2f, 0.7f, 0.7f, 0.7f,
+                -0.5f, 0.8f, 0f, 2f, 0.7f, 0.7f, 0.7f,
+                -0.5f, -0.8f, 0f, 1f, 0.7f, 0.7f, 0.7f,
 // Line 1
-                -0.5f, 0f, 1f, 0f, 0f,
-                0.5f, 0f, 1f, 0f, 0f,
+                -0.5f, 0f, 0f, 1.5f, 1f, 0f, 0f,
+                0.5f, 0f, 0f, 1.5f, 1f, 0f, 0f,
 // Mallets
-                0f, -0.4f, 0f, 0f, 1f,
-                0f, 0.4f, 1f, 0f, 0f
+                0f, -0.4f, 0f, 1.25f, 0f, 0f, 1f,
+                0f, 0.4f, 0f, 1.75f, 1f, 0f, 0f
         };
         vertexData = ByteBuffer
                 .allocateDirect(verticles.length * BYTES_PER_FLOAT)
